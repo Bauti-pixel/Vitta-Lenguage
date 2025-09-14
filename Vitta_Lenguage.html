@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viťťa Language - Diccionario Antiguo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Georgia, serif;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 69, 19, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(101, 67, 33, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #8B4513 0%, #A0522D 25%, #CD853F 50%, #DEB887 100%);
+            min-height: 100vh;
+            color: #2F1B14;
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            background: 
+                linear-gradient(145deg, #F5DEB3 0%, #DEB887 20%, #D2B48C 80%, #BC9A6A 100%);
+            border: 8px solid #8B4513;
+            border-radius: 15px;
+            padding: 40px 60px;
+            margin-bottom: 40px;
+            box-shadow: 
+                inset 0 0 20px rgba(139, 69, 19, 0.3),
+                0 15px 35px rgba(0, 0, 0, 0.4),
+                0 5px 15px rgba(139, 69, 19, 0.6);
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 98px,
+                    rgba(139, 69, 19, 0.1) 100px
+                );
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(45deg, #654321, #8B4513, #A0522D);
+            border-radius: 19px;
+            z-index: -1;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 2px solid rgba(139, 69, 19, 0.4);
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 4em;
+            font-weight: bold;
+            font-family: 'Times New Roman', Georgia, serif;
+            color: #8B4513;
+            text-shadow: 
+                2px 2px 0px #DEB887,
+                4px 4px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 25px;
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        .title::before {
+            content: '📜';
+            position: absolute;
+            left: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.6em;
+        }
+
+        .title::after {
+            content: '📜';
+            position: absolute;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%) scaleX(-1);
+            font-size: 0.6em;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 25px 18px 60px;
+            border: 4px solid #8B4513;
+            border-radius: 12px;
+            font-size: 18px;
+            font-family: 'Times New Roman', Georgia, serif;
+            background: #F5DEB3;
+            color: #2F1B14;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 
+                inset 2px 2px 5px rgba(139, 69, 19, 0.3),
+                0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-input:focus {
+            border-color: #A0522D;
+            box-shadow: 
+                inset 2px 2px 5px rgba(139, 69, 19, 0.3),
+                0 0 0 3px rgba(160, 82, 45, 0.3),
+                0 5px 15px rgba(0, 0, 0, 0.3);
+            background: #FFF8DC;
+        }
+
+        .search-input::placeholder {
+            color: #8B4513;
+            opacity: 0.7;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+        }
+
+        .result-display {
+            background: 
+                linear-gradient(145deg, #FFF8DC 0%, #F5DEB3 50%, #DEB887 100%);
+            border: 4px solid #8B4513;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 
+                inset 0 0 15px rgba(139, 69, 19, 0.2),
+                0 8px 25px rgba(0, 0, 0, 0.3);
+            display: none;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 48px,
+                    rgba(139, 69, 19, 0.1) 50px
+                );
+        }
+
+        .result-display.show {
+            display: block;
+        }
+
+        .translation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .original, .translated {
+            flex: 1;
+            text-align: center;
+        }
+
+        .original h3, .translated h3 {
+            color: #8B4513;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            font-family: 'Times New Roman', Georgia, serif;
+            text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.3);
+        }
+
+        .word {
+            font-size: 2.2em;
+            font-weight: bold;
+            padding: 15px;
+            background: 
+                linear-gradient(145deg, #FFF8DC, #F0E68C);
+            border: 3px solid #8B4513;
+            border-radius: 8px;
+            font-family: 'Times New Roman', Georgia, serif;
+            color: #2F1B14;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            box-shadow: 
+                inset 1px 1px 3px rgba(255, 255, 255, 0.8),
+                inset -1px -1px 3px rgba(139, 69, 19, 0.3);
+        }
+
+        .arrow {
+            font-size: 3em;
+            color: #8B4513;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .alphabet-table {
+            background: 
+                linear-gradient(145deg, #F5DEB3 0%, #DEB887 20%, #D2B48C 80%, #BC9A6A 100%);
+            border: 8px solid #8B4513;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 
+                inset 0 0 20px rgba(139, 69, 19, 0.3),
+                0 15px 35px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 1200px;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 98px,
+                    rgba(139, 69, 19, 0.1) 100px
+                );
+        }
+
+        .table-title {
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 40px;
+            font-family: 'Times New Roman', Georgia, serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .alphabet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .letter-pair {
+            background: 
+                linear-gradient(145deg, #8B4513, #A0522D);
+            color: #FFF8DC;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 
+                0 6px 12px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s ease;
+            border: 2px solid #654321;
+        }
+
+        .letter-pair:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 8px 16px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .original-letter {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-family: 'Times New Roman', Georgia, serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .translated-letter {
+            font-size: 1.6em;
+            opacity: 0.95;
+            font-family: 'Times New Roman', Georgia, serif;
+        }
+
+        .sample-words {
+            margin-top: 40px;
+        }
+
+        .sample-title {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 30px;
+            font-family: 'Times New Roman', Georgia, serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .words-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .word-card {
+            background: 
+                linear-gradient(145deg, #FFF8DC, #F0E68C);
+            border: 3px solid #8B4513;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 6px solid #A0522D;
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.2),
+                inset 1px 1px 3px rgba(255, 255, 255, 0.7);
+            transition: transform 0.2s ease;
+        }
+
+        .word-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 12px rgba(0, 0, 0, 0.3),
+                inset 1px 1px 3px rgba(255, 255, 255, 0.8);
+        }
+
+        .word-original {
+            font-weight: bold;
+            color: #2F1B14;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+            font-family: 'Times New Roman', Georgia, serif;
+        }
+
+        .word-translated {
+            color: #8B4513;
+            font-style: italic;
+            font-size: 1.1em;
+            font-family: 'Times New Roman', Georgia, serif;
+        }
+
+        @media (max-width: 768px) {
+            .translation {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+            
+            .alphabet-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+            
+            .title {
+                font-size: 2.5em;
+            }
+            
+            .title::before, .title::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Viťťa Language</h1>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Busca cualquier palabra para traducir...">
+                </div>
+            </div>
+
+            <div class="result-display" id="resultDisplay">
+                <div class="translation">
+                    <div class="original">
+                        <h3>Palabra Original</h3>
+                        <div class="word" id="originalWord"></div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="translated">
+                        <h3>Viťťa Translation</h3>
+                        <div class="word" id="translatedWord"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alphabet-table">
+            <h2 class="table-title">📚 Tabla de Conversión del Alfabeto</h2>
+            <div class="alphabet-grid" id="alphabetGrid"></div>
+
+            <div class="sample-words">
+                <h3 class="sample-title">✨ Palabras de Ejemplo</h3>
+                <div class="words-grid" id="sampleWords"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mapeo del abecedario basado en las imágenes
+        const alphabetMap = {
+            'a': 'o',
+            'b': 'p',
+            'c': 'k',
+            'd': 't',
+            'e': 'i',
+            'f': 'v',
+            'g': 'h',
+            'h': 'g',
+            'i': 'u',
+            'j': 's',
+            'k': 'd',
+            'l': 'r',
+            'm': 'n',
+            'n': 'm',
+            'o': 'e',
+            'p': 'b',
+            'q': 'c',
+            'r': 'l',
+            's': 'j',
+            't': 'f',
+            'u': 'a',
+            'v': 'f',
+            'w': 't',
+            'x': 'z',
+            'y': 'q',
+            'z': 'y'
+        };
+
+        // Palabras de ejemplo
+        const sampleWords = [
+            'hola', 'mundo', 'amor', 'feliz', 'casa', 'agua', 
+            'libro', 'cielo', 'tierra', 'fuego', 'viento', 'mar',
+            'sol', 'luna', 'estrella', 'montaña', 'río', 'bosque',
+            'flor', 'árbol', 'pájaro', 'gato', 'perro', 'familia'
+        ];
+
+        function translateWord(word) {
+            return word.toLowerCase().split('').map(char => {
+                return alphabetMap[char] || char;
+            }).join('');
+        }
+
+        function createAlphabetGrid() {
+            const grid = document.getElementById('alphabetGrid');
+            
+            Object.entries(alphabetMap).forEach(([original, translated]) => {
+                const letterPair = document.createElement('div');
+                letterPair.className = 'letter-pair';
+                letterPair.innerHTML = `
+                    <div class="original-letter">${original.toUpperCase()}</div>
+                    <div class="translated-letter">→ ${translated.toUpperCase()}</div>
+                `;
+                grid.appendChild(letterPair);
+            });
+        }
+
+        function createSampleWords() {
+            const container = document.getElementById('sampleWords');
+            
+            sampleWords.forEach(word => {
+                const wordCard = document.createElement('div');
+                wordCard.className = 'word-card';
+                wordCard.innerHTML = `
+                    <div class="word-original">${word}</div>
+                    <div class="word-translated">${translateWord(word)}</div>
+                `;
+                container.appendChild(wordCard);
+            });
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const resultDisplay = document.getElementById('resultDisplay');
+            const originalWord = document.getElementById('originalWord');
+            const translatedWord = document.getElementById('translatedWord');
+
+            searchInput.addEventListener('input', function() {
+                const word = this.value.trim();
+                
+                if (word.length > 0) {
+                    const translated = translateWord(word);
+                    originalWord.textContent = word;
+                    translatedWord.textContent = translated;
+                    resultDisplay.classList.add('show');
+                } else {
+                    resultDisplay.classList.remove('show');
+                }
+            });
+
+            // Enfocar el campo de búsqueda al cargar
+            searchInput.focus();
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            createAlphabetGrid();
+            createSampleWords();
+            setupSearch();
+        });
+    </script>
+</body>
+</html>
